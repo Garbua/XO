@@ -8,15 +8,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Controller
 @RequestMapping("/controller")
 public class ExampleController {
 	private Map <Integer, String> map = new HashMap<>();
 	private String winner = "";
+	boolean flag = false;
 
 	@RequestMapping(value = "/player")
 	public String Player(HttpServletRequest request) {
@@ -65,7 +64,7 @@ public class ExampleController {
 				(map.get(2).equalsIgnoreCase("x") && map.get(5).equalsIgnoreCase("x") && map.get(8).equalsIgnoreCase("x")) ||
 				(map.get(0).equalsIgnoreCase("x") && map.get(4).equalsIgnoreCase("x") && map.get(8).equalsIgnoreCase("x")) ||
 				(map.get(2).equalsIgnoreCase("x") && map.get(4).equalsIgnoreCase("x") && map.get(6).equalsIgnoreCase("x"))) {
-
+				flag = true;
 			return winner = user;
 
 		} else if ((map.get(0).equalsIgnoreCase("o") && map.get(1).equalsIgnoreCase("o") && map.get(2).equalsIgnoreCase("o")) ||
@@ -76,11 +75,11 @@ public class ExampleController {
 				(map.get(2).equalsIgnoreCase("o") && map.get(5).equalsIgnoreCase("o") && map.get(8).equalsIgnoreCase("o")) ||
 				(map.get(0).equalsIgnoreCase("o") && map.get(4).equalsIgnoreCase("o") && map.get(8).equalsIgnoreCase("o")) ||
 				(map.get(2).equalsIgnoreCase("o") && map.get(4).equalsIgnoreCase("o") && map.get(6).equalsIgnoreCase("o"))) {
-
+				flag= true;
 			return winner = ai;
 
 		} else if (!map.containsValue("")){
-
+					flag = true;
 					return winner = n;
 				}else {
 			return winner = "";
@@ -90,17 +89,34 @@ public class ExampleController {
 
 
 
-public void ai(){
-		Random random = new Random();
-
-
-		for (int i = 0; i < 1 ; i--){
-			int j = random.nextInt(8);
-			if (map.get(j).equals("")){
-				map.put(j,"o");
-				return;
-			}
+public void ai() {
+	Random random = new Random();
+	Map <Integer, Integer> map2 = new HashMap<>();
+	Integer count = 1;
+	for (int a = 0; a <= 8; a++) {
+		if (map.get(a).equals("")) {
+			map2.put(count,a);
+			count++;
 		}
+	}
 
+	System.out.println( "count = " + count);
+	if ( (!map2.containsValue(""))|| flag) {
+		int j = random.nextInt(count-1)+1;
+		map.put(map2.get(j), "o");
+		return;
+	}
 }
+
+
+
+//		for (int i = 0; i < 1 ; i--){
+//			int j = random.nextInt(8);
+//			if (map.get(j).equals("")){
+//				map.put(j,"o");
+//				return;
+//			}
+//		}
+
+
 }
