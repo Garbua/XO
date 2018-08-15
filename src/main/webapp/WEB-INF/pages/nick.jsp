@@ -1,9 +1,16 @@
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <html>
 <body>
+<span style="float: right">
+    <a href="?lang=en">en</a>
+    |
+    <a href="?lang=ru">ru</a>
+</span>
 <center>
 <meta charset="UTF-8">
-<h1 align="center"><strong>Крестики нолики</strong> </h1>
+<h1 align="center"><strong><spring:message code="label.title"/></strong> </h1>
 <form action="/controller/player" method="get" name="player">
     <table align="center", border="2", cellspacing="2", cellpadding="10", width="50">
         <tr>
@@ -24,11 +31,11 @@
 
     </table>
     <br>
-    ${win}
+    <spring:message code="${win}"/>
     <br>
     <input type="submit" align="center" value="Походить" >
 </form>
-    <a href="/index.jsp">Играть ещё раз</a>
+    <a href="/index.jsp"><spring:message code="label.restart"/></a>
 </center>
 </body>
 </html>

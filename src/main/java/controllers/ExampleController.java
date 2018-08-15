@@ -24,105 +24,40 @@ public class ExampleController {
 	public String Player(HttpServletRequest request) {
 //Записываем в мапу состояние игрового поля (ход игрока):
 		pole(request);
-//Проверка победителя:
-		winner(pl);
-		win();
+//Проверка победителя игрока:
+		winner(pl, "label.winPlayer");
 //Ход компьютера:
 		ai(request);
-//Проверка победителя:
-		winner(pc);
-		win();
+//Проверка победителя компьютера:
+		winner(pc, "label.winAI");
 
 		request.setAttribute("win", winner);
+		winner = "";
 		list.clear();
 
 
 		return "pages/nick";
 	}
 
-	public String winner(String p) {
-		winner = p;
-		String n = "Ничья!";
+	public String winner(String p, String r) {
+
 		// проверка горизонтали
-		for (int i =0; i < pole * pole; i+=pole) {
-			for (int j = 0; j < pole; j++) {
-				if (!map.get(i + j).equalsIgnoreCase(p)) {
-					winner = "";
-				}
-			}
-		}
+		horizontalCheck(p, r);
 
-//		for (int i =0; i < pole * pole; i+=pole){
-//				for(int j = 0; j < pole; j++)
-//					if(!map.get(i+j).equalsIgnoreCase(p)){
-//						 winner = "";
-//					}
-//			}
-//		//проверка вертикали
-		for (int i =0; i < pole * pole; i+=pole) {
-			for (int j = 0; j < pole; j++) {
-					if (!map.get((i/pole) + (j * pole) ).equalsIgnoreCase(p)){
-						winner = "";
-					}
-			}
-		}
+		//проверка вертикали
+		verticalCheck(p, r);
 
-//		for (int k = 0; k < pole; k++){
-//			for (int i =0; i < pole * pole; i+=pole)
-//			if (!map.get(k + i).equalsIgnoreCase(p)){
-//			 winner = "";
-//			}
-//		}
 		//проверка диагонали 0-4-8
-		for (int i =0; i < pole * pole; i+=pole+1){
-			if (!map.get(i).equalsIgnoreCase(p)){
-				winner = "";
-			}
-		}
+		diagonalCheck1(p, r);
+
 		//проверка диагонали 2-4-6
-		for (int i = pole - 1; i< (pole*pole)-1; i+= pole -1){
-			if (!map.get(i).equalsIgnoreCase(p)){
-				winner = "";
-			}
-		}
+		diagonalCheck2(p, r);
+
 		//проверка ничьей
-		if (!map.containsValue("")) {
-				return winner = n;
-			}
-			return winner = "";
+		drawCheck(p, r);
 
+		return winner;
 
-
-
-
-
-
-// пределать проверку
-//		if ((map.get(0).equalsIgnoreCase("x") && map.get(1).equalsIgnoreCase("x") && map.get(2).equalsIgnoreCase("x")) ||
-//				(map.get(3).equalsIgnoreCase("x") && map.get(4).equalsIgnoreCase("x") && map.get(5).equalsIgnoreCase("x")) ||
-//				(map.get(6).equalsIgnoreCase("x") && map.get(7).equalsIgnoreCase("x") && map.get(8).equalsIgnoreCase("x")) ||
-//				(map.get(0).equalsIgnoreCase("x") && map.get(3).equalsIgnoreCase("x") && map.get(6).equalsIgnoreCase("x")) ||
-//				(map.get(1).equalsIgnoreCase("x") && map.get(4).equalsIgnoreCase("x") && map.get(7).equalsIgnoreCase("x")) ||
-//				(map.get(2).equalsIgnoreCase("x") && map.get(5).equalsIgnoreCase("x") && map.get(8).equalsIgnoreCase("x")) ||
-//				(map.get(0).equalsIgnoreCase("x") && map.get(4).equalsIgnoreCase("x") && map.get(8).equalsIgnoreCase("x")) ||
-//				(map.get(2).equalsIgnoreCase("x") && map.get(4).equalsIgnoreCase("x") && map.get(6).equalsIgnoreCase("x"))) {
-//			return winner = user;
-//
-//		} else if ((map.get(0).equalsIgnoreCase("o") && map.get(1).equalsIgnoreCase("o") && map.get(2).equalsIgnoreCase("o")) ||
-//				(map.get(3).equalsIgnoreCase("o") && map.get(4).equalsIgnoreCase("o") && map.get(5).equalsIgnoreCase("o")) ||
-//				(map.get(6).equalsIgnoreCase("o") && map.get(7).equalsIgnoreCase("o") && map.get(8).equalsIgnoreCase("o")) ||
-//				(map.get(0).equalsIgnoreCase("o") && map.get(3).equalsIgnoreCase("o") && map.get(6).equalsIgnoreCase("o")) ||
-//				(map.get(1).equalsIgnoreCase("o") && map.get(4).equalsIgnoreCase("o") && map.get(7).equalsIgnoreCase("o")) ||
-//				(map.get(2).equalsIgnoreCase("o") && map.get(5).equalsIgnoreCase("o") && map.get(8).equalsIgnoreCase("o")) ||
-//				(map.get(0).equalsIgnoreCase("o") && map.get(4).equalsIgnoreCase("o") && map.get(8).equalsIgnoreCase("o")) ||
-//				(map.get(2).equalsIgnoreCase("o") && map.get(4).equalsIgnoreCase("o") && map.get(6).equalsIgnoreCase("o"))) {
-//			return winner = ai;
-//
-//		} else if (!map.containsValue("")) {
-//			return winner = n;
-//		} else {
-//			return winner = "";
-//		}
 	}
 
 
@@ -145,20 +80,68 @@ public class ExampleController {
 			if (map.get(i).equals("")) {
 				list.add(i);
 			}
-
 		}
-
-
 	}
 
-	public void win(){
-		String user = "Победил игрок!";
-		String ai = "Победил компьютер!";
-		if (winner.equalsIgnoreCase(pl)){
-			winner = user;
-		}else if (winner.equalsIgnoreCase(pc)){
-			winner = ai;
-		}else winner = "";
+	public String horizontalCheck(String p, String r){
+		for (int i =0; i < pole * pole; i+=pole) {
+			if (winner.equalsIgnoreCase("")) {
+				winner = r;
+				for (int j = 0; j < pole; j++) {
+					if (!map.get(i + j).equalsIgnoreCase(p)) {
+						winner = "";
+						break;
+					}
+				}
+			}else return winner;
+		}
+		return winner;
+	}
 
+	public String verticalCheck(String p, String r){
+		for (int i =0; i < pole * pole; i+=pole) {
+			if (winner.equalsIgnoreCase("")){
+				winner = r;
+				for (int j = 0; j < pole; j++) {
+					if (!map.get((i / pole) + (j * pole)).equalsIgnoreCase(p)) {
+						winner = "";
+						break;
+					}
+				}
+			}else return winner;
+		}
+		return winner;
+	}
+
+	public String diagonalCheck1(String p, String r){
+		if (winner.equalsIgnoreCase("")) {
+			winner = r;
+			for (int i = 0; i < pole * pole; i += pole + 1) {
+				if (!map.get(i).equalsIgnoreCase(p)) {
+					winner = "";
+				}
+			}
+		}else return winner;
+		return winner;
+	}
+
+	public String diagonalCheck2(String p, String r){
+		if (winner.equalsIgnoreCase("")) {
+			winner = r;
+			for (int i = pole - 1; i < (pole * pole) - 1; i += pole - 1) {
+				if (!map.get(i).equalsIgnoreCase(p)) {
+					winner = "";
+				}
+			}
+		}else return winner;
+		return winner;
+	}
+
+	public String drawCheck(String p, String r){
+		String n = "label.winNO";
+		if (!map.containsValue("")&& winner.equalsIgnoreCase("")) {
+			return winner = n;
+		}
+		return winner;
 	}
 }
